@@ -1,12 +1,11 @@
 #!/bin/bash
 
+set -e
+
 if [ ! -f dyld_shared_cache_arm64e.orig ]; then
     echo "Original shared cache is not in place."
     exit
 fi
-
-# echo Mounting NAND...
-# hdiutil attach -imagekey diskimage-class=CRawDiskImage -blocksize 4096 T8030NAND/nvme.1
 
 echo Restoring original DYLD...
 cp dyld_shared_cache_arm64e.orig dyld_shared_cache_arm64e
@@ -31,10 +30,7 @@ printf '\x20\x00\x80\xD2' | dd bs=1 count=4 seek=0x15E94F18 conv=notrunc of=dyld
 printf '\xC0\x03\x5F\xD6' | dd bs=1 count=4 seek=0x15E94F1C conv=notrunc of=dyld_shared_cache_arm64e
 
 echo Moving patched DYLD...
-dd if=dyld_shared_cache_arm64e of=/Volumes/System/System/Library/Caches/com.apple.dyld/dyld_shared_cache_arm64e
+cp dyld_shared_cache_arm64e /Volumes/System/System/Library/Caches/com.apple.dyld/dyld_shared_cache_arm64e
 
 echo Deleting patched DYLD...
 rm dyld_shared_cache_arm64e
-
-# echo Ejecting NAND...
-# diskutil eject /Volumes/System
