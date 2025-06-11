@@ -2,8 +2,7 @@
 
 # adapted create_apticket.py
 
-import sys
-import plistlib
+import sys, plistlib
 from pyasn1.type import constraint
 from pyasn1.type.univ import *
 from pyasn1.type.char import *
@@ -68,9 +67,23 @@ def modifying_func(b, first=True):
             b[i][1][0][1] = plist["Manifest"]["DeviceTree"]["Digest"]
         elif str(b[i][0]) == "trst":
             b[i][1][0][1] = plist["Manifest"]["StaticTrustCache"]["Digest"]
-        elif str(b[i][0]) == "rfta":
-            # Corrupt this
-            b[i][0] = "atrf"
+        elif str(b[i][0]) == "rtsc":
+            b[i][1][0][1] = plist["Manifest"]["RestoreTrustCache"]["Digest"]
+        elif str(b[i][0]) == "sepi":
+            b[i][1][0][1] = plist["Manifest"]["SEP"]["Digest"]
+        elif str(b[i][0]) == "rsep":
+            b[i][1][0][1] = plist["Manifest"]["RestoreSEP"]["Digest"]
+        # elif str(b[i][0]) == 'mtfw':
+        #    b[i][1][0][1] = plist['Manifest']['Multitouch']['Digest']
+        # elif str(b[i][0]) == 'rfta':
+        #    # Corrupt this
+        #    b[i][0] = 'atrf'
+        # elif str(b[i][0]) == 'ftap':
+        #    # Corrupt this
+        #    b[i][0] = 'patf'
+        elif str(b[i][0]) in ("rfta", "ftap", "rfts", "ftsp"):
+            # b[i][1][0][1] = '5340b6a059bdb732e715e7bb1b292edcd45c2a8d1d07e6039d3f338d7c4428ab'
+            b[i][0] = b[i][0][::-1]
         elif str(b[i][0]) == "MANP":
             manp = b[i][1]
             manp_length = len(manp)
@@ -80,9 +93,9 @@ def modifying_func(b, first=True):
                 pass
                 if str(manp[j][0]) == "CHIP":
                     # manp[j][1] = 0x1234
-                    manp[j][1] = 0x8015
+                    # manp[j][1] = 0x8015
                     # manp[j][1] = 0x8020
-                    # manp[j][1] = 0x8030
+                    manp[j][1] = 0x8030
                 if str(manp[j][0]) == "ECID" and first:
                     manp[j][1] = 0x1122334455667788
                 if str(manp[j][0]) == "snon" and first:  # data_2422147c8_nonce
